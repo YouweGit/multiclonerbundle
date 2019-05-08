@@ -1,0 +1,5 @@
+youwe_multi_cloner:
+    resource: "@YouweMultiClonerBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
