@@ -19,7 +19,7 @@
   "extra": {
     "pimcore": {
       "bundles": [
-        "Youwe\\MultiClonerBundle"
+        "Youwe\\MultiClonerBundle\\YouweMultiClonerBundle"
       ]
     }
   }
