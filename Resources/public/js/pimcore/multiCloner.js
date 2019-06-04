@@ -31,6 +31,18 @@ pimcore.YouweMultiCloner = Class.create({
     },
 
     createCloneForm: function() {
+
+        var keyGenerationMethodsStore = Ext.create('Ext.data.Store', {
+            fields: ['value', 'text'],
+            data : [{
+                text: 'Add unique code',
+                value: 'uniqueId'
+            }, {
+                text: 'Add counter',
+                value: 'counter'
+            }]
+        });
+
         return this.multiCloneFormPanel = Ext.create('Ext.form.Panel',{
             url: '/admin/youwe_multi_cloner/clone',
             width: 500,
@@ -45,6 +57,13 @@ pimcore.YouweMultiCloner = Class.create({
                     allowBlank: false,
                     minValue: 1,
                     maxValue: 1000
+                }, {
+                    xtype: 'checkbox',
+                    width: 480,
+                    labelWidth: 300,
+                    fieldLabel: 'Recursive (clone children as well)',
+                    name: 'recursive',
+                    value: true
                 }, {
                     xtype: 'textfield',
                     width: 480,
@@ -77,6 +96,16 @@ pimcore.YouweMultiCloner = Class.create({
                     labelWidth: 300,
                     fieldLabel: 'Open folder after cloning',
                     name: 'openFolder'
+                }, {
+                    xtype: 'combobox',
+                    width: 480,
+                    labelWidth: 300,
+                    fieldLabel: 'New object key generation method',
+                    name: 'keyGeneration',
+                    value: 'counter',
+                    displayField: 'text',
+                    valueField: 'value',
+                    store: keyGenerationMethodsStore
                 }, {
                     xtype: 'numberfield',
                     name: 'objectId',
