@@ -5,7 +5,6 @@ namespace Youwe\MultiClonerBundle\Controller;
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\Object;
 use Pimcore\Model\Site\Dao;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
