@@ -49,7 +49,7 @@ class DefaultController extends AdminController
         $objectService = new \Pimcore\Model\DataObject\Service($user);
         $createdObjectIds = [];
         if($cloneCount) {
-            $cnumber = 2;
+            $cnumber = '';
             for($c = 0; $c < $cloneCount; $c++) {
                 if($recursive) {
                     $new = $objectService->copyRecursive($parentFolder, $object);
@@ -57,16 +57,33 @@ class DefaultController extends AdminController
                     $new = $objectService->copyAsChild($parentFolder, $object);
                 }
                 // reset the key and save again because stupid pimcore keeps adding _copy_copy_copy...
-                $keybase = $object->getKey() . '-';
-                $keyfolder = $new->getPath();
+                $keybase = $object->getKey();
+//                $keyfolder = $new->getPath();
+                $keyfolder = $new->getParent()->getFullPath() . '/';
                 if($keyGeneration == 'counter') {
                     do {
-                        $newkey = $keybase . $cnumber++;
-                        $data = $db->fetchRow('SELECT o_id FROM objects WHERE o_path = :path AND `o_key` = :key', [
-                            'path' => $keyfolder,
-                            'key' => $newkey
-                        ]);
-                    } while (isset($data['o_id']) && $data['o_id']);
+                        $newkey = $keybase . $cnumber;
+                        \Pimcore\Log\Simple::log('test', 'MULTICLONER id '.$new->getId().' trying ' . $newkey . ' in path ' . $keyfolder);
+                        if($new->getId()) {   // if the key is already reserved for this object, there is no problem!
+                            $data = $db->fetchRow('SELECT o_id FROM objects WHERE o_path = :path AND o_key = :key AND o_id <> :id', [
+                                'path' => $keyfolder,
+                                'key' => $newkey,
+                                'id' => $new->getId()
+                            ]);
+                        } else {   // this object does not have an ID yet - so lets make sure the key is unique
+                            $data = $db->fetchRow('SELECT o_id FROM objects WHERE o_path = :path AND o_key = :key', [
+                                'path' => $keyfolder,
+                                'key' => $newkey
+                            ]);
+                        }
+                        if(!isset($data['o_id'])) {
+                            break;
+                        }
+                        if(!$cnumber) {
+                            $keybase = $keybase . '-';
+                        }
+                        $cnumber++;
+                    } while (true);
                 } else {
                     $newkey = $keybase . uniqid();
                 }
