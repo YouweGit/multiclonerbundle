@@ -10,7 +10,8 @@ class YouweMultiClonerBundle extends AbstractPimcoreBundle
     {
         return [
             '/bundles/youwemulticloner/js/pimcore/startup.js',
-            '/bundles/youwemulticloner/js/pimcore/multiCloner.js'
+            '/bundles/youwemulticloner/js/pimcore/multiCloner.js',
+            '/bundles/youwemulticloner/js/pimcore/gridCloner.js',
         ];
     }
 }
