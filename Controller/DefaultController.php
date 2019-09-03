@@ -4,6 +4,7 @@ namespace Youwe\MultiClonerBundle\Controller;
 
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Bundle\AdminBundle\Security\User\User;
+use Pimcore\Log\Simple;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\DataObject\Variety;
@@ -20,7 +21,6 @@ class DefaultController extends AdminController
      */
     public function cloneAction(Request $request)
     {
-        $db = \Pimcore\Db::get();
         $cloneCount = $request->get('cloneCount');
         $objectId = $request->get('objectId');
         $parentPath = $request->get('parentPath');
@@ -51,7 +51,7 @@ class DefaultController extends AdminController
 
         $createdObjectIds = [];
         if($cloneCount) {
-            $objects = $this->cloneObject($object, $cloneCount, $recursive, $parentFolder);
+            $objects = $this->cloneObject($object, $cloneCount, $recursive, $parentFolder, $keyGeneration);
             foreach ($objects as $object) {
                 $createdObjectIds[] = $object->getId();
             }
@@ -82,7 +82,8 @@ class DefaultController extends AdminController
 
         $object = Concrete::getByPath($object);
 
-        $clones = $this->cloneObject($object);
+        /** @var Variety[] $clones */
+        $clones = $this->cloneObject($object, $cloneCount);
 
 
         /** @var Variety $firstClone */
@@ -99,8 +100,18 @@ class DefaultController extends AdminController
         ]);
     }
 
-    private function cloneObject($object, $cloneCount = 1, $recursive = true, $parentFolder = null, $parentPath = null)
+    /**
+     * @param $object
+     * @param int $cloneCount
+     * @param bool $recursive
+     * @param null $parentFolder
+     * @param null $parentPath
+     * @return array
+     * @throws \Exception
+     */
+    private function cloneObject($object, $cloneCount = 1, $recursive = true, $parentFolder = null, $parentPath = null, $keyGeneration = 'counter')
     {
+        $db = \Pimcore\Db::get();
         /** @var User $user */
         $securityUser = $this->getUser();
         $objectService = new \Pimcore\Model\DataObject\Service($securityUser->getUser());
@@ -151,11 +162,11 @@ class DefaultController extends AdminController
             } else {
                 $newkey = $keybase . uniqid();
             }
+            $new->setPath($keyfolder . $newkey);
             $new->setKey($newkey);
             $new->save();
             $createdObjectIds[] = $new->getId();
         }
-
 
         return $newObjects;
     }
