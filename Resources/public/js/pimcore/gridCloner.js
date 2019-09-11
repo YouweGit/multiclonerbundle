@@ -6,7 +6,7 @@ pimcore.YouweGridCloner = Class.create({
         return "pimcore.YouweGridCloner";
     },
 
-    cloneForm: function (allowedClasses = ['PSH']) {
+    cloneForm: function (allowedClasses = ['']) {
         this.multiCloneWindowPanel = Ext.create('Ext.window.Window', {
             title: 'Create multiple clones of an object',
             modal:true,
@@ -15,7 +15,7 @@ pimcore.YouweGridCloner = Class.create({
         }).show();
     },
 
-    createCloneForm: function (allowedClasses = ['PSH']) {
+    createCloneForm: function (allowedClasses = ['']) {
 
         var keyGenerationMethodsStore = Ext.create('Ext.data.Store', {
             fields: ['value', 'text'],
@@ -77,7 +77,7 @@ pimcore.YouweGridCloner = Class.create({
         });
     },
 
-    getHrefConfig: function(allowedClasses = ['PSH']) {
+    getHrefConfig: function(allowedClasses = ['']) {
         let allowedClassesConfig = [];
         for (let i in allowedClasses) {
             allowedClassesConfig[i] = {classes: allowedClasses[i]};
@@ -95,7 +95,7 @@ pimcore.YouweGridCloner = Class.create({
         };
     },
 
-    getObjectSelector: function (allowedClasses = ['PSH']) {
+    getObjectSelector: function (allowedClasses = ['']) {
         var config = this.getHrefConfig(allowedClasses);
         var context = {};
         var data = {};
