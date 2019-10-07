@@ -6,16 +6,16 @@ pimcore.YouweGridCloner = Class.create({
         return "pimcore.YouweGridCloner";
     },
 
-    cloneForm: function() {
+    cloneForm: function (allowedClasses = ['']) {
         this.multiCloneWindowPanel = Ext.create('Ext.window.Window', {
             title: 'Create multiple clones of an object',
             modal:true,
             closeAction:'destroy',
-            items: [this.createCloneForm()]
+            items: [this.createCloneForm(allowedClasses)]
         }).show();
     },
 
-    createCloneForm: function() {
+    createCloneForm: function (allowedClasses = ['']) {
 
         var keyGenerationMethodsStore = Ext.create('Ext.data.Store', {
             fields: ['value', 'text'],
@@ -33,7 +33,7 @@ pimcore.YouweGridCloner = Class.create({
             width: 700,
             bodyPadding: 10,
             items: [
-                this.getObjectSelector(),
+                this.getObjectSelector(allowedClasses),
                 {
                     xtype: 'numberfield',
                     width: 480,
@@ -77,7 +77,12 @@ pimcore.YouweGridCloner = Class.create({
         });
     },
 
-    getHrefConfig: function() {
+    getHrefConfig: function(allowedClasses = ['']) {
+        let allowedClassesConfig = [];
+        for (let i in allowedClasses) {
+            allowedClassesConfig[i] = {classes: allowedClasses[i]};
+        }
+
         return {
             fieldtype: 'href',
             name: 'relatedObject',
@@ -86,14 +91,12 @@ pimcore.YouweGridCloner = Class.create({
             title: 'Related object',
             labelWidth: 150,
             disabled: false,
-            classes: [{
-                classes: 'PSH'
-            }]
+            classes: allowedClassesConfig,
         };
     },
 
-    getObjectSelector: function () {
-        var config = this.getHrefConfig();
+    getObjectSelector: function (allowedClasses = ['']) {
+        var config = this.getHrefConfig(allowedClasses);
         var context = {};
         var data = {};
         var field = new pimcore.object.tags[config.fieldtype](data, config);
